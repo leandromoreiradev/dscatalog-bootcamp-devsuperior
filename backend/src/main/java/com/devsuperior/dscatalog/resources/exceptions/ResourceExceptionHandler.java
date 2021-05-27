@@ -18,7 +18,7 @@ public class ResourceExceptionHandler {
 	public ResponseEntity<StandardError> entityNotFound(EntityNotFoundException e, HttpServletRequest request){
 		StandardError err = new StandardError();
 		err.setTimestamp(Instant.now());
-		//.value para tranformar tipo enum para inteiro
+		//.value para transformar tipo enum para inteiro
 		err.setStatus(HttpStatus.NOT_FOUND.value());
 		err.setError("Resource not found");
 		err.setMessage(e.getMessage());
