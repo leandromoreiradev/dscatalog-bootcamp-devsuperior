@@ -47,11 +47,12 @@ public class Category implements Serializable{
 	}
 	
 	
-
+	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	public Instant getCreatedAt() {
 		return createdAt;
 	}
 
+	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	public Instant getUpdateAt() {
 		return updateAt;
 	}
