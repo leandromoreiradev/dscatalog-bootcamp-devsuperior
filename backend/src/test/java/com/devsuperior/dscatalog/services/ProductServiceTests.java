@@ -1,6 +1,8 @@
 package com.devsuperior.dscatalog.services;
 
 import com.devsuperior.dscatalog.repositories.ProductRepository;
+import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +40,22 @@ public class ProductServiceTests {
 
         //Lanca exeption (Tipo:EmptyResultDataAccessException.class) quando tenta deletar um Id que não existe
         Mockito.doThrow(EmptyResultDataAccessException.class).when(repository).deleteById(nonExistingId);
+    }
+    
+    
+    
+    
+    @Test
+    public void deleteShouldThrowResourceNotFoundExceptionWhenIdDoesNotExists() {
+
+        //Deve lançar exception quando tentar deletar id que não existe
+        Assertions.assertThrows(ResourceNotFoundException.class, ()->{
+            //tentando deletar id que não existe
+            service.delete(nonExistingId);
+        });
+        //Verifica se o metodo deleteById foi chamado na acao acima
+        //Mockito.times quantidade de vezes que foi chamado
+        Mockito.verify(repository, Mockito.times(1)).deleteById(nonExistingId);
     }
 
     @Test
