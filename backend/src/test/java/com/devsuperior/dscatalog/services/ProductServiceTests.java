@@ -58,6 +58,8 @@ public class ProductServiceTests {
         //page sendo instanciado e já recebendo uma lista de product
         page = new PageImpl<>(List.of(product));
         
+        //*****CONFIGURANDO OS COMPORTAMENTOS SIMULADO DO REPOSITORY MOCKADO*******//
+        
         //Dica: Quando há retorno começamos com When
         //Quando chmar o findAll passando qualquer argumento então retorne uma pagina
         Mockito.when(repository.findAll((Pageable)ArgumentMatchers.any())).thenReturn(page);
@@ -72,7 +74,6 @@ public class ProductServiceTests {
         //Quando chamar repository.save passando qualquer obj então retorne um product
         Mockito.when(repository.save(ArgumentMatchers.any())).thenReturn(product);
 
-        //Configurando os comportamentos simulado do repository mockado
         //Não faz nada = [doNothing()] quando = [When()] chamar o metodo deleteById para deletar o id que existe
         Mockito.doNothing().when(repository).deleteById(existingId);
 
