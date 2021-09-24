@@ -31,13 +31,13 @@ public class ProductResourceTests {
 
     //Injetando o MockMvc
     @Autowired
-    private MockMvc mockMvc; //Transforma um obj java em JSON
+    private MockMvc mockMvc;
 
     @MockBean
     private ProductService service; //Mockando o service
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper; //Transforma um obj java em JSON
 
     private Long existingId;
     private Long nonExistingId;
