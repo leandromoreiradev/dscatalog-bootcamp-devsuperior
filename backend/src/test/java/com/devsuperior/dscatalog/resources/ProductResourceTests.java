@@ -129,7 +129,7 @@ public class ProductResourceTests {
 
         //Tranformando um obj para json
         String jsonBody = objectMapper.writeValueAsString(productDTO);
-        //Quando chamar PUT "/products/{id}" passando um id que não existe  deve lançar ResourceNotFoundException
+        //Quando chamar PUT "/products/{id}" passando um id que não existe  deve retornar status 404 not found
         ResultActions result =
                 mockMvc.perform(put("/products/{id}", nonExistingId)
                         .content(jsonBody) // Conteudo JSON que será mandado no body da REQ
