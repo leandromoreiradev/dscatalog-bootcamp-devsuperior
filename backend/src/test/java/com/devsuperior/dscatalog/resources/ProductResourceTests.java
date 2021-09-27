@@ -2,6 +2,7 @@ package com.devsuperior.dscatalog.resources;
 
 import com.devsuperior.dscatalog.dto.ProductDTO;
 import com.devsuperior.dscatalog.services.ProductService;
+import com.devsuperior.dscatalog.services.exceptions.DataBaseException;
 import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
 import com.devsuperior.dscatalog.tests.Factory;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,13 +17,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,6 +41,7 @@ public class ProductResourceTests {
 
     private Long existingId;
     private Long nonExistingId;
+    private Long dependentId;
     private ProductDTO productDTO;
     private PageImpl<ProductDTO> page;
 
@@ -48,7 +49,8 @@ public class ProductResourceTests {
     void setUp() throws Exception {
         //Inicializando variaveis auxiliares para o teste
         existingId = 1L;
-        nonExistingId = 2L ;
+        nonExistingId = 2L;
+        dependentId = 3L;
         productDTO = Factory.createProductDTO();
         page = new PageImpl<>(List.of(productDTO));
         //Simulando o comportamento do service
@@ -65,11 +67,34 @@ public class ProductResourceTests {
         //Se quisermos usar um valor específico para um argumento, podemos usar o eq(*aqui vai o argumento especifico)método
         when(service.update(eq(existingId), any())).thenReturn(productDTO);
 
+        //Quando chamar sevice.insert passando um productDTO , retorne um productDTO
+        when(service.insert(any())).thenReturn(productDTO);
+
         //Quando chamar sevice.update passando nonExistingId, lance uma ResourceNotFoundException
         when(service.update(eq(nonExistingId), any())).thenThrow(ResourceNotFoundException.class);
 
+        //Quando chamar o service.delete passando id existente não retornar nada
+        doNothing().when(service).delete(existingId);
+
+        //Quando chamar o service.delete passando id inexistente lançar ResourceNotFoundException
+        doThrow(ResourceNotFoundException.class).when(service).delete(nonExistingId);
+       //Quando chamar o service.delete passando id que esta relacionado com outra entidade lançar DataBaseException
+        doThrow(DataBaseException.class).when(service).delete(dependentId);
 
     }
+
+    @Test
+    public void shouldReturnProductDTOAndStatusCreatedWhenCallInsert() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
+        ResultActions result =
+                mockMvc.perform(post("/products")
+                        .content(jsonBody) // Conteudo JSON que será mandado no body da REQ
+                        .contentType(MediaType.APPLICATION_JSON) // Tipo de conteudo que vai no body da REQ
+                        .accept(MediaType.APPLICATION_JSON));// Tipo de conteudo aceito
+        //Assertions
+        result.andExpect(status().isCreated());
+    }
+
 
     @Test
     public void findAllShouldReturnPage() throws Exception {
@@ -90,7 +115,7 @@ public class ProductResourceTests {
                 mockMvc.perform(get("/products/{id}", existingId)
                         .accept(MediaType.APPLICATION_JSON));
         //Assertions
-        result.andExpect(status().isOk()); //Verifica se o status é ok (200)
+        result.andExpect(status().isOk()); //Verifica se o status é (200)
         result.andExpect(jsonPath("$.id").exists()); //Verifica se o corpo tem o atributo id
         result.andExpect(jsonPath("$.name").exists()); //Verifica se o corpo  o atributo name
         result.andExpect(jsonPath("$.description").exists()); //Verifica se o corpo  o atributo description;
@@ -117,7 +142,7 @@ public class ProductResourceTests {
                         .contentType(MediaType.APPLICATION_JSON) // Tipo de conteudo que vai no body da REQ
                         .accept(MediaType.APPLICATION_JSON));// Tipo de conteudo aceito
         //Assertions
-        result.andExpect(status().isOk()); //Verifica se o status é ok (200)
+        result.andExpect(status().isOk()); //Verifica se o status é (200)
         result.andExpect(jsonPath("$.id").exists()); //Verifica se o corpo tem o atributo id
         result.andExpect(jsonPath("$.name").exists()); //Verifica se o corpo  o atributo name
         result.andExpect(jsonPath("$.description").exists()); //Verifica se o corpo  o atributo description
@@ -136,7 +161,27 @@ public class ProductResourceTests {
                         .contentType(MediaType.APPLICATION_JSON) // Tipo de conteudo que vai no body da REQ
                         .accept(MediaType.APPLICATION_JSON));// Tipo de conteudo aceito
         //Assertions
-        result.andExpect(status().isNotFound()); //Verifica se o status é ok (404)
+        result.andExpect(status().isNotFound()); //Verifica se o status é (404)
     }
+
+    @Test
+    public void shouldReturnNoContentWhenCallDelete() throws Exception {
+        ResultActions result =
+                mockMvc.perform(delete("/products/{id}", existingId));
+
+        //Assertions
+        result.andExpect(status().isNoContent()); //Verifica se o status (204)
+    }
+
+
+    @Test
+    public void shouldReturnNoContentWhenCallDeleteIdNonExists() throws Exception {
+        ResultActions result =
+                mockMvc.perform(delete("/products/{id}", nonExistingId));
+
+        //Assertions
+        result.andExpect(status().isNotFound()); //Verifica se o status (404)
+    }
+
 
 }
