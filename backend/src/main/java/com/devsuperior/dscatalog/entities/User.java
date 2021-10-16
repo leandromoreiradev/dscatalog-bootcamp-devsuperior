@@ -1,19 +1,29 @@
 package com.devsuperior.dscatalog.entities;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@Entity
+@Table(name = "tb_user")
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String firstName;
     private String lastName;
     private String email;
     private String password;
 
+    //Mapeamento muitos para muitos da tabela associativa entre user e role
+    @ManyToMany
+    @JoinTable(name = "tb_user_role",
+            joinColumns = @JoinColumn(name = "user_id"), //É o nome da FK referente a tabela da classe atual
+            inverseJoinColumns = @JoinColumn(name = "role_id"))//É o nome da FK referente a tabela da role
     private Set<Role> roles = new HashSet<>();
 
     public Set<Role> getRoles() {

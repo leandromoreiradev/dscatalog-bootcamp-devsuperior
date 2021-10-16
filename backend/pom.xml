@@ -16,6 +16,7 @@
 	<description>Projeto DSCatalog Bootcamp DevSuperior</description>
 	<properties>
 		<java.version>11</java.version>
+
 	</properties>
 	<dependencies>
 		<dependency>
@@ -66,6 +67,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>2.3.11.RELEASE</version>
 			</plugin>
 		</plugins>
 	</build>
