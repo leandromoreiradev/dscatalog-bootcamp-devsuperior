@@ -20,7 +20,7 @@ public class User implements Serializable {
     private String password;
 
     //Mapeamento muitos para muitos da tabela associativa entre user e role
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER) //Força sempre que buscar o user no DB, ja vai vir com seus roles(perfis do user)
     @JoinTable(name = "tb_user_role",
             joinColumns = @JoinColumn(name = "user_id"), //É o nome da FK referente a tabela da classe atual
             inverseJoinColumns = @JoinColumn(name = "role_id"))//É o nome da FK referente a tabela da role
