@@ -8,7 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration // Indica que esta é uma classe de configuração
 public class AppConfig {
 
-    @Bean // é um componente do spring, o spring intancia e gerencia ele em outros components
+    @Bean // Bean é um componente do spring com assinatura de metodo, o spring intancia e gerencia ele em outros components
     public BCryptPasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }

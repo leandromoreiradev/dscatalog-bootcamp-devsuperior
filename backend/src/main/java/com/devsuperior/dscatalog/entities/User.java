@@ -26,10 +26,6 @@ public class User implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "role_id"))//É o nome da FK referente a tabela da role
     private Set<Role> roles = new HashSet<>();
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
     public User() {
     }
 
@@ -79,6 +75,10 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
     }
 
     @Override
