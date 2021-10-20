@@ -16,6 +16,8 @@ public class User implements Serializable {
     private Long id;
     private String firstName;
     private String lastName;
+
+    @Column(unique = true) // Torna esse atributo unico, não permitindo sua repetição no DB
     private String email;
     private String password;
 

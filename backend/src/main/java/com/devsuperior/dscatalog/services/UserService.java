@@ -96,7 +96,7 @@ public class UserService {
 		//Para limpar conjunto de roles que por ventura esteja na entidade
 		entity.getRoles().clear();
 		//Para cada roleDTO da lista de roleDTO
-		for(RoleDTO roleDTO :  dto.getRolesDTO()){
+		for(RoleDTO roleDTO :  dto.getRoles()){
 			//instancie um role
 			Role role = roleRepository.getOne(roleDTO.getId());
 			//depois adicione a lista de roles da entidade

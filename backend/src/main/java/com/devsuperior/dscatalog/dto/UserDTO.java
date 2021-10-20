@@ -36,10 +36,10 @@ public class UserDTO implements Serializable {
     //Ele recebe uma entidade do tipo User e pega os atributos de dentro da entidade
     //e coloca dentro dos seus atributos correspondentes no UserDTO
     public UserDTO(User entity) {
-        this.id = entity.getId();
-        this.firstName = entity.getFirstName();
-        this.lastName = entity.getLastName();
-        this.email = entity.getEmail();
+        id = entity.getId();
+        firstName = entity.getFirstName();
+        lastName = entity.getLastName();
+        email = entity.getEmail();
         //Para cada entidade role dentro da lista de roles
         //adiciona um new RoleDTO(role) na lista de roles, onde role é a entidade a ser convertida em RoleDTO
         entity.getRoles().forEach(role -> this.roles.add(new RoleDTO(role)));
@@ -80,7 +80,7 @@ public class UserDTO implements Serializable {
         this.email = email;
     }
 
-    public Set<RoleDTO> getRolesDTO() {
+    public Set<RoleDTO> getRoles() {
         return roles;
     }
 }
