@@ -4,6 +4,8 @@ import com.devsuperior.dscatalog.services.exceptions.DataBaseException;
 import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -39,6 +41,27 @@ public class ResourceExceptionHandler {
 		err.setMessage(e.getMessage());
 		//getRequestURI() pega a url
 		err.setPath(request.getRequestURI());
+
+		return ResponseEntity.status(status).body(err);
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ValidationError> validation(MethodArgumentNotValidException e, HttpServletRequest request){
+		HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY; // UNPROCESSABLE_ENTITY quando alguma entidade não pode ser processada
+		ValidationError err = new ValidationError();
+		err.setTimestamp(Instant.now());
+		//.value para transformar tipo enum para inteiro
+		err.setStatus(status.value());
+		err.setError("Validation exception");
+		err.setMessage(e.getMessage());
+		//getRequestURI() pega a url
+		err.setPath(request.getRequestURI());
+
+		//Percorrendo a lista de erros do beanValidation e add na lista personalizada
+		for (FieldError f : e.getBindingResult().getFieldErrors()) {
+			err.addError(f.getField(), f.getDefaultMessage());
+		}
+
 
 		return ResponseEntity.status(status).body(err);
 	}
