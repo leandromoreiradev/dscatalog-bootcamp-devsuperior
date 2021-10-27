@@ -2,6 +2,7 @@ package com.devsuperior.dscatalog.dto;
 
 
 import com.devsuperior.dscatalog.entities.User;
+import com.devsuperior.dscatalog.services.validation.UserInsertValid;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import java.util.HashSet;
 
 
 import java.util.Set;
+
 
 public class UserDTO implements Serializable {
 
