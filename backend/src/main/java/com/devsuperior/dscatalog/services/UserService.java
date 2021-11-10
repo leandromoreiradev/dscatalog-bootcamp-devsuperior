@@ -10,11 +10,16 @@ import com.devsuperior.dscatalog.repositories.RoleRepository;
 import com.devsuperior.dscatalog.repositories.UserRepository;
 import com.devsuperior.dscatalog.services.exceptions.DataBaseException;
 import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
+import org.slf4j.Logger; // Import do logger
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +27,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
+
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
+
+	//Instanciando a classe Logger de forma static
+	// passando como paremetro a classe onde ele está rodando (UserService.class)
+	private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder; //Tranforma a senha em Hash
@@ -103,4 +113,16 @@ public class UserService {
 		}
 	}
 
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		//Buscando o user por email que é o username do sistema
+		User user = repository.findByEmail(username);
+		//Verificando se o usuario é nulo
+		if (user == null) {
+			logger.error("User not found: " + username);
+			throw new UsernameNotFoundException("Email not found");
+		}
+		logger.info("User found: " + username);
+		return user;
+	}
 }
