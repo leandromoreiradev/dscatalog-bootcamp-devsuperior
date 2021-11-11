@@ -1,6 +1,7 @@
 package com.devsuperior.dscatalog.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,6 +17,15 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @Configuration
 @EnableAuthorizationServer //Faz o processamento por debaixo dos panos pra dizer que esta classe representa o authorizationServer do Oauth
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+
+    @Value("${security.oauth2.client.client-id}")
+    private String clientId;
+
+    @Value("${security.oauth2.client.client-secret}")
+    private String clientSecret;
+
+    @Value("${jwt.duration}")
+    private Integer jwtDuration;
 
     //Injetando o BCryptPasswordEncoder
     @Autowired
@@ -43,11 +53,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
        clients.inMemory() //Processo em memoria
-              .withClient("dscatalog") //Define o client_id
-              .secret(passwordEncoder.encode("dscatalog123")) //Define o client_secret
+              .withClient(clientId) //Define o client_id
+              .secret(passwordEncoder.encode(clientSecret)) //Define o client_secret
               .scopes("read", "write")//informa tipo de acesso dado, escrita ou leitura ou os 2
               .authorizedGrantTypes("password") //tipos de acesso de login
-              .accessTokenValiditySeconds(86400); //Tempo de expiração do token em segundos nesse caso aqui 24hs = 86400 segundos
+              .accessTokenValiditySeconds(jwtDuration); //Tempo de expiração do token em segundos nesse caso aqui 24hs = 86400 segundos
     }
 
     //Configura quem que vai autorizar e o qual o formato do token
